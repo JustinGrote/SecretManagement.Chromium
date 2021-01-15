@@ -35,7 +35,7 @@ Describe 'Get-SecretInfo' {
         $secretName = '@twitter.com'
         $secretInfo = SecretManagement.Chromium.Extension\Get-SecretInfo @defaultVaultParams -Filter $secretName
         $secretInfo | Should -HaveCount 3
-        'pester','pester2','pester3' | foreach {
+        'pester','pester2','pester3' | ForEach-Object {
             "$PSItem@twitter.com" | Should -BeIn $secretInfo.Name
         }
     }

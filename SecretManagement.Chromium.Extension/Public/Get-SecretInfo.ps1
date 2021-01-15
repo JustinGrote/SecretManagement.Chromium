@@ -2,7 +2,7 @@ using namespace Microsoft.Powershell.SecretManagement
 function Get-SecretInfo {
     param(
         [string]$Filter,
-        [string]$VaultName = (Get-SecretVault).VaultName,
+        [string]$VaultName,
         [hashtable]$AdditionalParameters = (Get-SecretVault -Name $VaultName).VaultParameters
     )
     Test-VaultConfiguration $VaultName
@@ -26,21 +26,25 @@ function Get-SecretInfo {
 
     [String]$secretInfoQuery = "SELECT * FROM logins" + $filterQuery
     try {
-        $secretInfoResult = $db.InvokeSQL($secretInfoQuery) | Foreach-Object {
-            [SecretInformation]::new(
-                [string]($PSItem.username_value + '@' + ([uri]$PSItem.origin_url).Host), #Name
-                [SecretType]::PSCredential,
-                $VaultName
-            )
-        }
+        $secretInfoResult = $db.InvokeSQL($secretInfoQuery) 
     } catch {
         throw
     } finally {
         $db.close()
     }
 
-    return $secretInfoResult
-
+    #TODO: Cast this to chromiumCredentialEntry
+    if ($AdditionalParameters.AsCredentialEntry) {
+        return $secretInfoResult
+    } else {
+        return $secretInfoResult | Foreach-Object {
+            [SecretInformation]::new(
+                [string]($PSItem.username_value + '@' + ([uri]$PSItem.origin_url).Host), #Name
+                [SecretType]::PSCredential,
+                $VaultName
+            )
+        }
+    }
     #TODO: Implement SecretInfo
 
     # $KeepassParams = GetKeepassParams -VaultName $VaultName -AdditionalParameters $AdditionalParameters

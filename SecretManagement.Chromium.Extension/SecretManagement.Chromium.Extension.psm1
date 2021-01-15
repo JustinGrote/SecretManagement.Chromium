@@ -4,9 +4,12 @@ if ($PSVersionTable.PSVersion -ge '6.0.0' -and -not $isWindows) {
 
 $SCRIPT:__VAULT = @{}
 $ErrorActionPreference = 'Stop'
-Get-ChildItem "$PSScriptRoot/Private/*.ps1" | Foreach-Object {
-    . $PSItem.FullName
+foreach ($folderItem in 'Private','Classes') {
+    Get-ChildItem "$PSScriptRoot/$folderItem/*.ps1" | Foreach-Object {
+        . $PSItem.FullName
+    }
 }
+
 $publicFunctions = Get-ChildItem "$PSScriptRoot/Public/*.ps1" | Foreach-Object {
     . $PSItem.FullName
     #Output the name of the function assuming it is the same as the .ps1 file so it can be exported
