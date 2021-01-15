@@ -12,8 +12,8 @@ function Get-Secret {
         Filter = $Name
         VaultName = $VaultName
         AdditionalParameters = $AdditionalParameters
+        AsCredentialEntry = $true
     }
-    $getSecretInfoParams.AdditionalParameters.AsCredentialEntry = $true
 
     $secretInfo = SecretManagement.Chromium.Extension\Get-SecretInfo @getSecretInfoParams
 

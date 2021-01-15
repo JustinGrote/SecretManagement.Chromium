@@ -15,28 +15,119 @@ Describe 'Get-SecretInfo' {
     }
 
     It 'Secret by fully qualified name' {
-        $secretName = 'pester@twitter.com'
+        $secretName = 'pester|https://twitter.com/'
         $secretInfo = SecretManagement.Chromium.Extension\Get-SecretInfo @defaultVaultParams -Filter $secretName
         $secretInfo | Should -HaveCount 1
         $secretInfo.Name | Should -Be $secretName
         $secretInfo.VaultName | Should -be '__PESTER'
         $secretInfo.Type | Should -Be 'PSCredential'
     }
-    It 'Secret by username only' {
-        $secretName = 'pester2'
-        $secretInfo = SecretManagement.Chromium.Extension\Get-SecretInfo @defaultVaultParams -Filter $secretName
-        $secretInfo | Should -HaveCount 1
-        $secretInfo.Name | Should -Be 'pester2@twitter.com'
-        $secretInfo.VaultName | Should -be '__PESTER'
-        $secretInfo.Type | Should -Be 'PSCredential'
-    }
-    
-    It 'Secret by domain only (multiple results)' {
-        $secretName = '@twitter.com'
-        $secretInfo = SecretManagement.Chromium.Extension\Get-SecretInfo @defaultVaultParams -Filter $secretName
-        $secretInfo | Should -HaveCount 3
-        'pester','pester2','pester3' | ForEach-Object {
-            "$PSItem@twitter.com" | Should -BeIn $secretInfo.Name
+
+    $secretSearchTestCases = @(
+        @{
+            #Fully Qualified
+            searchTerm = 'pester|https://twitter.com/'
+            expectedResultCount = 1
+            expectedNames = 'pester|https://twitter.com/'
         }
+        @{
+            #Explicit Domain
+            searchTerm = 'https://twitter.com/'
+            expectedResultCount = 3
+            expectedNames = @(
+                'pester|https://twitter.com/'
+                'pester2|https://twitter.com/'
+                'pester3|https://twitter.com/'
+            )
+        }
+        @{
+            #Wildcard Domain
+            searchTerm = '*twit*'
+            expectedResultCount = 3
+            expectedNames = @(
+                'pester|https://twitter.com/'
+                'pester2|https://twitter.com/'
+                'pester3|https://twitter.com/'
+            )
+        }
+        @{
+            #Wildcard Domain w/ mistake
+            searchTerm = '*twit*xxxmistyped*'
+            expectedResultCount = 0
+        }
+        @{
+            #Explicit Username
+            searchTerm = 'pester2|'
+            expectedResultCount = 1
+            expectedNames ='pester2|https://twitter.com/'
+        }
+        @{
+            #Wildcard Username
+            searchTerm = 'pester*|'
+            expectedResultCount = 3
+            expectedNames = @(
+                'pester|https://twitter.com/'
+                'pester2|https://twitter.com/'
+                'pester3|https://twitter.com/'
+            )
+        }
+        @{
+            #Double Wildcard Username
+            searchTerm = '*pes*|'
+            expectedResultCount = 3
+            expectedNames = @(
+                'pester|https://twitter.com/'
+                'pester2|https://twitter.com/'
+                'pester3|https://twitter.com/'
+            )
+        }
+        @{
+            #Intermediate wildcard
+            searchTerm = '*p*s*|'
+            expectedResultCount = 3
+            expectedNames = @(
+                'pester|https://twitter.com/'
+                'pester2|https://twitter.com/'
+                'pester3|https://twitter.com/'
+            )
+        }
+        @{
+            #Intermediate wildcard with wrong term
+            searchTerm = '*p*xxxmistyped*|'
+            expectedResultCount = 0
+        }
+        @{
+            #Combined Intermediate wildcard
+            searchTerm = 'pester*|*twitter*'
+            expectedResultCount = 3
+            expectedNames = @(
+                'pester|https://twitter.com/'
+                'pester2|https://twitter.com/'
+                'pester3|https://twitter.com/'
+            )
+        }
+        @{
+            #Http and Https
+            searchTerm = 'pester*|*twitter*'
+            expectedResultCount = 3
+            expectedNames = @(
+                'pester|https://twitter.com/'
+                'pester2|https://twitter.com/'
+                'pester3|https://twitter.com/'
+            )
+        }
+    )
+    It 'Secret Search <searchTerm>' -TestCases $secretSearchTestCases {
+        $secretInfo = SecretManagement.Chromium.Extension\Get-SecretInfo @defaultVaultParams -Filter $searchTerm
+        $secretInfo | Should -HaveCount $expectedResultCount
+        $secretInfo.Name.foreach{
+            $PSItem | Should -BeIn $ExpectedNames
+        }
+        $secretInfo.VaultName.foreach{
+            $PSItem | Should -be '__PESTER'
+        } 
+        $secretInfo.Type.foreach{
+            $PSItem | Should -Be 'PSCredential'
+        } 
     }
 }

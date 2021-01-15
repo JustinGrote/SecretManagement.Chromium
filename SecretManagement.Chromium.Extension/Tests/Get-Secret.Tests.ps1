@@ -11,7 +11,7 @@ Describe 'Get-Secret' {
     }
 
     It 'Fetches Secret By Name' {
-        $fetchedSecret = SecretManagement.Chromium.Extension\Get-Secret @defaultVaultParams -Name 'pester@twitter.com' 
+        $fetchedSecret = SecretManagement.Chromium.Extension\Get-Secret @defaultVaultParams -Name 'pester|https://twitter.com/' 
         $fetchedSecret | Should -BeOfType 'PSCredential'
         $fetchedSecret.GetNetworkCredential().Password | Should -Be 'pasterpassword'
         $fetchedSecret.UserName | Should -Be 'pester'

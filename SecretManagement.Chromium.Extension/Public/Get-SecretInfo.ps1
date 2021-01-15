@@ -3,23 +3,29 @@ function Get-SecretInfo {
     param(
         [string]$Filter,
         [string]$VaultName,
-        [hashtable]$AdditionalParameters = (Get-SecretVault -Name $VaultName).VaultParameters
+        [hashtable]$AdditionalParameters = (Get-SecretVault -Name $VaultName).VaultParameters,
+        #For internal use from other internal cmdlets
+        [switch]$AsCredentialEntry
     )
     Test-VaultConfiguration $VaultName
 
     $db = $__VAULT[$vaultName]
     if ($Filter -and $Filter -ne '*') {
         [String[]]$filterParts = $Filter.split('|')
-        $filterQueryParts = @()
-        if ($filterParts[0]) {
-            $filterQueryParts += "signon_realm LIKE '%{0}%'" -f $filterParts[1]
-        }
-        if ($filterParts.count -eq 2) {
-            $filterQueryParts += "username_value = '{0}'" -f $filterParts[0]
+        [String[]]$filterQueryParts = @()
+        #Default is to search by URL
+        #TODO: Escape _ and %
+        if ($filterParts.count -eq 1) {
+            $filterQueryParts += "origin_url LIKE '{0}'" -f $filterParts[0].replace('*','%')
+        } elseif ($filterParts.count -eq 2) {
+            $filterQueryParts += "username_value LIKE '{0}'" -f $filterParts[0].replace('*','%')
+            if ($filterParts[1].ToCharArray().Count -gt 0) {
+                $filterQueryParts += "origin_url LIKE '{0}'" -f $filterParts[1].replace('*','%')
+            }
         }
         
         [String]$filterQuery = $null
-        if ($filterParts[1]) {
+        if ($filterQueryParts.count -ge 1) {
             [String]$filterQuery = ' WHERE ' + ($filterQueryParts -join ' AND ')
         }
     }
@@ -33,13 +39,21 @@ function Get-SecretInfo {
         $db.close()
     }
 
+    if (-not $secretInfoResult) {
+        return @()
+    }
+
     #TODO: Cast this to chromiumCredentialEntry
-    if ($AdditionalParameters.AsCredentialEntry) {
+    if ($AsCredentialEntry) {
         return $secretInfoResult
     } else {
         return $secretInfoResult | Foreach-Object {
             [SecretInformation]::new(
-                [string]($PSItem.username_value + '|' + [uri]$PSItem.origin_url), #Name
+                [string](
+                    $PSItem.username_value + 
+                    '|' + 
+                    $PSItem.origin_url
+                ), #Name
                 [SecretType]::PSCredential,
                 $VaultName
             )
