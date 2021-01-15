@@ -3,11 +3,13 @@ using namespace System.Security.Cryptography
 using namespace System.Data
 class ChromiumCredentialEntry {
     [uri]$Target
-    [PSCredential] $Credential
+    [PSCredential]$Credential
 
     ChromiumCredentialEntry ([DataRow]$DataRow) {
         $this.Target = $DataRow.origin_url
-        $password = [Text.Encoding]::Default.GetString(
+        $password = $DataRow.password_value
+
+        [Text.Encoding]::Default.GetString(
             [ProtectedData]::Unprotect(
                 $DataRow.password_value,
                 $null,

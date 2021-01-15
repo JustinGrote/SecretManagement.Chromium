@@ -8,18 +8,18 @@ function Get-SecretInfo {
     Test-VaultConfiguration $VaultName
 
     $db = $__VAULT[$vaultName]
-    if ($Filter) {
-        [String[]]$filterParts = $Filter.split('@')
+    if ($Filter -and $Filter -ne '*') {
+        [String[]]$filterParts = $Filter.split('|')
         $filterQueryParts = @()
         if ($filterParts[0]) {
-            $filterQueryParts += "username_value = '{0}'" -f $filterParts[0]
+            $filterQueryParts += "signon_realm LIKE '%{0}%'" -f $filterParts[1]
         }
         if ($filterParts.count -eq 2) {
-            $filterQueryParts += "origin_url LIKE '%{0}%'" -f $filterParts[1]
+            $filterQueryParts += "username_value = '{0}'" -f $filterParts[0]
         }
         
         [String]$filterQuery = $null
-        if ($filterQueryParts) {
+        if ($filterParts[1]) {
             [String]$filterQuery = ' WHERE ' + ($filterQueryParts -join ' AND ')
         }
     }
@@ -39,7 +39,7 @@ function Get-SecretInfo {
     } else {
         return $secretInfoResult | Foreach-Object {
             [SecretInformation]::new(
-                [string]($PSItem.username_value + '@' + ([uri]$PSItem.origin_url).Host), #Name
+                [string]($PSItem.username_value + '|' + [uri]$PSItem.origin_url), #Name
                 [SecretType]::PSCredential,
                 $VaultName
             )

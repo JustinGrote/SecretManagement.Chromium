@@ -3,7 +3,6 @@ if ($PSVersionTable.PSVersion -ge '6.0.0' -and -not $isWindows) {
 }
 
 $SCRIPT:__VAULT = @{}
-$ErrorActionPreference = 'Stop'
 foreach ($folderItem in 'Private','Classes') {
     Get-ChildItem "$PSScriptRoot/$folderItem/*.ps1" | Foreach-Object {
         . $PSItem.FullName

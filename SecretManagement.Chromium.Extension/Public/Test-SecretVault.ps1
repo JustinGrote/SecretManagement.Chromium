@@ -4,26 +4,31 @@ function Test-SecretVault {
     param (
         [Parameter(ValueFromPipelineByPropertyName,Mandatory)]
         [string]$VaultName,
+
         [Parameter(ValueFromPipelineByPropertyName)]
-        #This intelligent default is here because if you call test-secretvault from other commands it doesn't populate like it does when called from SecretManagement
-        [hashtable]$AdditionalParameters = (Get-Secretvault $VaultName).VaultParameters
+        [hashtable]$AdditionalParameters = (Get-Secretvault $VaultName).VaultParameters #This intelligent default is here because if you call test-secretvault from other commands it doesn't populate like it does when called from SecretManagement
     )
+
     Write-Verbose "SecretManagement: Testing Vault ${VaultName}"
 
     #Basic Sanity Checks
     if (-not $VaultName) { throw 'You must specify a Vault Name to test' }
 
     if (-not $AdditionalParameters.Path) {
-        #TODO: Create a default vault if path isn't supplied
-        #TODO: Add ThrowUser to throw outside of module scope
-        throw "Vault ${VaultName}: You must specify the Path vault parameter as a path to your Chromium Database. Hint for Chrome: `$env:LOCALAPPDATA\Google\Chrome\User Data\Default\Login Data"
+        $VaultDetectParameters = @{}
+        if ($VaultParameters.Preset) {$VaultDetectParameters.Preset = $VaultParameters.Preset}
+        if ($VaultParameters.ProfileName) {$VaultDetectParameters.ProfileName = $VaultParameters.ProfileName}
+        $AdditionalParameters.Path = Find-Chromium @VaultDetectParameters
+        if (-not $AdditionalParameters.Path) {
+            throw "Vault ${VaultName}: No vaults autodetected. You must specify the Path vault parameter as a path to your Chromium Database. Hint for Chrome: `$env:LOCALAPPDATA\Google\Chrome\User Data\Default\Login Data"
+        }
     }
     if (-not $AdditionalParameters.StatePath) {
-        $candidateStatePath = Join-Path (Split-Path $AdditionalParameters.Path) "Local State"
-        if (Test-Path $candidateStatePath) {
+        try {
+            $candidateStatePath = Join-Path $AdditionalParameters.Path "../../Local State" -Resolve -ErrorAction stop
             Write-Verbose "Autodetected Local State file at $candidateStatePath"
             $AdditionalParameters.StatePath = $candidateStatePath
-        } else {
+        } catch {
             throw "Vault ${VaultName}: You must specify the StatePath parameter as a path to your Chromium Database. Hint for Chrome: `$env:LOCALAPPDATA\Google\Chrome\User Data\Local State"
         }
     }
