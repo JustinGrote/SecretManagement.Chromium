@@ -1,0 +1,9 @@
+{
+    "github-actions.workflows.pinned.refresh.enabled": true,
+    "github-actions.workflows.pinned.refresh.interval": 5,
+    "github-actions.workflows.pinned.workflows": [
+        ".github/workflows/test.yml"
+    ],
+    "pesterExplorer.autoDiscoverOnOpen": true,
+    "pesterExplorer.testRootDirectory": "SecretManagement.Chromium.Extension/Tests"
+}
