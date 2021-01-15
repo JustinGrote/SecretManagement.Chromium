@@ -11,7 +11,7 @@ Describe 'Get-SecretInfo' {
     }
     It 'All secrets' {
         $secretInfo = SecretManagement.Chromium.Extension\Get-SecretInfo @defaultVaultParams
-        $secretInfo | Should -HaveCount 4
+        $secretInfo | Should -HaveCount 8
     }
 
     It 'Secret by fully qualified name' {
@@ -58,37 +58,49 @@ Describe 'Get-SecretInfo' {
         @{
             #Explicit Username
             searchTerm = 'pester2|'
-            expectedResultCount = 1
-            expectedNames ='pester2|https://twitter.com/'
+            expectedResultCount = 2
+            expectedNames = @(
+                'pester2|https://twitter.com/'
+                'pester2|https://www.facebook.com/'
+            )
         }
         @{
             #Wildcard Username
             searchTerm = 'pester*|'
-            expectedResultCount = 3
+            expectedResultCount = 6
             expectedNames = @(
                 'pester|https://twitter.com/'
                 'pester2|https://twitter.com/'
                 'pester3|https://twitter.com/'
+                'pester1|https://www.facebook.com/'
+                'pester2|https://www.facebook.com/'
+                'pester3|https://www.facebook.com/'
             )
         }
         @{
             #Double Wildcard Username
             searchTerm = '*pes*|'
-            expectedResultCount = 3
+            expectedResultCount = 6
             expectedNames = @(
                 'pester|https://twitter.com/'
                 'pester2|https://twitter.com/'
                 'pester3|https://twitter.com/'
+                'pester1|https://www.facebook.com/'
+                'pester2|https://www.facebook.com/'
+                'pester3|https://www.facebook.com/'
             )
         }
         @{
             #Intermediate wildcard
             searchTerm = '*p*s*|'
-            expectedResultCount = 3
+            expectedResultCount = 6
             expectedNames = @(
                 'pester|https://twitter.com/'
                 'pester2|https://twitter.com/'
                 'pester3|https://twitter.com/'
+                'pester1|https://www.facebook.com/'
+                'pester2|https://www.facebook.com/'
+                'pester3|https://www.facebook.com/'
             )
         }
         @{
