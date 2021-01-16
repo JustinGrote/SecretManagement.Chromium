@@ -1,4 +1,3 @@
-#requires -modules getsql -version 5
 using namespace System.Security.Cryptography
 function Unprotect-ChromiumString {
     param (

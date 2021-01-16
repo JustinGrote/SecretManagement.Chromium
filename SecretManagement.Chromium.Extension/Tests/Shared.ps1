@@ -2,6 +2,9 @@ function PrepareTestEnvironment {
     $SCRIPT:testVaultName = '__PESTER'
     Microsoft.Powershell.SecretManagement\Unregister-SecretVault -Name $testVaultName -ErrorAction SilentlyContinue
     Remove-Module SecretManagement.Chromium,SecretManagement.Chromium.Extension -ErrorAction SilentlyContinue
+    if (-not (Get-Module ReallySimpleDatabase -ListAvailable -ErrorAction SilentlyContinue)) {
+        Install-Module ReallySimpleDatabase -Scope CurrentUser -Force -ErrorAction Stop
+    }
     Import-Module (Resolve-Path $PSScriptRoot/..) -Force
     
     $SCRIPT:mockDB = (Copy-Item "$PSScriptRoot/Mocks/Login Data" "$TestDrive/Login Data" -PassThru -Force)
@@ -10,7 +13,7 @@ function PrepareTestEnvironment {
     $SCRIPT:defaultVaultParams = @{
         VaultName = $testVaultName
         AdditionalParameters = @{
-            Path = $mockDB.fullname
+            DataPath = $mockDB.fullname
             StatePath = $mockState.fullname
         }
     }
@@ -18,7 +21,7 @@ function PrepareTestEnvironment {
         Name = $testVaultName
         ModuleName = Resolve-Path "$PSScriptRoot/../.."
         VaultParameters = @{
-            Path = $mockDB.fullname
+            DataPath = $mockDB.fullname
             StatePath = $mockState.fullname
         }
     }

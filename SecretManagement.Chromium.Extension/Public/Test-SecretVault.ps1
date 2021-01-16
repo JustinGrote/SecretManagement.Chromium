@@ -14,18 +14,18 @@ function Test-SecretVault {
     #Basic Sanity Checks
     if (-not $VaultName) { throw 'You must specify a Vault Name to test' }
 
-    if (-not $AdditionalParameters.Path) {
+    if (-not $AdditionalParameters.DataPath) {
         $VaultDetectParameters = @{}
         if ($VaultParameters.Preset) {$VaultDetectParameters.Preset = $VaultParameters.Preset}
         if ($VaultParameters.ProfileName) {$VaultDetectParameters.ProfileName = $VaultParameters.ProfileName}
-        $AdditionalParameters.Path = Find-Chromium @VaultDetectParameters
-        if (-not $AdditionalParameters.Path) {
+        $AdditionalParameters.DataPath = Find-Chromium @VaultDetectParameters
+        if (-not $AdditionalParameters.DataPath) {
             throw "Vault ${VaultName}: No vaults autodetected. You must specify the Path vault parameter as a path to your Chromium Database. Hint for Chrome: `$env:LOCALAPPDATA\Google\Chrome\User Data\Default\Login Data"
         }
     }
     if (-not $AdditionalParameters.StatePath) {
         try {
-            $candidateStatePath = Join-Path $AdditionalParameters.Path "../../Local State" -Resolve -ErrorAction stop
+            $candidateStatePath = Join-Path $AdditionalParameters.DataPath "../../Local State" -Resolve -ErrorAction stop
             Write-Verbose "Autodetected Local State file at $candidateStatePath"
             $AdditionalParameters.StatePath = $candidateStatePath
         } catch {
@@ -33,7 +33,7 @@ function Test-SecretVault {
         }
     }
 
-    $dbFile = Get-Item $AdditionalParameters.Path -ErrorAction Stop
+    $dbFile = Get-Item $AdditionalParameters.DataPath -ErrorAction Stop
     $db = ReallySimpleDatabase\Get-Database -Path $dbFile -WarningAction SilentlyContinue
     try {
         $db.open()
