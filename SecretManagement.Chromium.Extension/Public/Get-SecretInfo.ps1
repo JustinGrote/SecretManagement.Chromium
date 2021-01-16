@@ -72,27 +72,4 @@ function Get-SecretInfo {
             )
         }
     }
-    #TODO: Implement SecretInfo
-
-    # $KeepassParams = GetKeepassParams -VaultName $VaultName -AdditionalParameters $AdditionalParameters
-    # $KeepassGetResult = Get-KPEntry @KeepassParams | 
-    #     ConvertTo-KPPSObject |
-    #     Where-Object {$_ -notmatch '^.+?/Recycle Bin/'}
-
-    # [Object[]]$secretInfoResult = $KeepassGetResult | Where-Object Title -like $Filter | Foreach-Object {
-    #     #TODO: Find out why the fully qualified is required on Linux even though using Namespace is defined above
-    #     [Microsoft.PowerShell.SecretManagement.SecretInformation]::new(
-    #         $PSItem.Title, #string name
-    #         [Microsoft.PowerShell.SecretManagement.SecretType]::PSCredential, #SecretType type
-    #         $VaultName #string vaultName
-    #     )
-    # }
-
-    # [Object[]]$sortedInfoResult = $secretInfoResult | Sort-Object -Unique Name
-    # if ($sortedInfoResult.count -lt $secretInfoResult.count) {
-    #     $filteredRecords = (Compare-Object $sortedInfoResult $secretInfoResult | Where-Object SideIndicator -eq '=>').InputObject
-    #     Write-Warning "Vault ${VaultName}: Entries with non-unique titles were detected, the duplicates were filtered out. Duplicate titles are currently not supported with this extension, ensure your entry titles are unique in the database."
-    #     Write-Warning "Vault ${VaultName}: Filtered Non-Unique Titles: $($filteredRecords -join ', ')"
-    # }
-    # $sortedInfoResult
 }
