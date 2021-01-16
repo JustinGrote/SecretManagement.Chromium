@@ -3,6 +3,8 @@
 ## Overview
 This is a Vault Extension for the [Microsoft.Powershell.SecretManagement](https://github.com/powershell/secretmanagement) module. It allows you to quickly detect and access passwords saved in Chromium based browsers such as Google Chrome and Microsoft Edge. You can use credentials saved in the browser to access other resources via Powershell.
 
+![Demo](images/demo.gif)
+
 ## Requirements
 - **Powershell 7** (Windows Powershell 5.1 support on the roadmap)
 - **Microsoft Windows** (Linux/OSX support on the roadmap)
@@ -16,6 +18,8 @@ Get-SecretInfo | Out-Gridview -
 ```
 ## Features
 1. Automatic Discovery of Chrome and Edge (all versions)
+![demodiscovery](images\demo-discovery.gif)
+
 1. Fetching secrets, including secrets synced from Android
 1. Powerful filter and search syntax
 
