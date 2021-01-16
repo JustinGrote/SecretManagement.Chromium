@@ -9,9 +9,19 @@ function Get-SecretInfo {
     )
     Test-VaultConfiguration $VaultName
 
+    if ($AdditionalParameters.Delimiter) {
+        $VaultDelimiter = $AdditionalParameters.Delimiter
+    } else {
+        $VaultDelimiter = $SCRIPT:SecretNameDelimiter
+    }
     $db = $__VAULT[$vaultName]
-    if ($Filter -and $Filter -ne '*') {
-        [String[]]$filterParts = $Filter.split('|')
+
+    #First check for our special delimiter, so we know if this is an "easy" search
+    [String[]]$FilterParts = $filter.Split($VaultDelimiter)
+    if ($filterParts.count -gt 1) {
+        $filterQueryParts = "id = $($filter.Split($VaultDelimiter)[2])"
+    } elseif ($Filter -and $Filter -ne '*') {
+        [String[]]$filterParts = $Filter.split("|")
         [String[]]$filterQueryParts = @()
         #Default is to search by URL
         #TODO: Escape _ and %
@@ -23,11 +33,12 @@ function Get-SecretInfo {
                 $filterQueryParts += "origin_url LIKE '{0}'" -f $filterParts[1].replace('*','%')
             }
         }
-        
-        [String]$filterQuery = $null
-        if ($filterQueryParts.count -ge 1) {
-            [String]$filterQuery = ' WHERE ' + ($filterQueryParts -join ' AND ')
-        }
+    }
+
+    #Build the fitler part of the query string
+    [String]$filterQuery = $null
+    if ($filterQueryParts.count -ge 1) {
+        [String]$filterQuery = ' WHERE ' + ($filterQueryParts -join ' AND ')
     }
 
     [String]$secretInfoQuery = "SELECT * FROM logins" + $filterQuery
@@ -51,8 +62,10 @@ function Get-SecretInfo {
             [SecretInformation]::new(
                 [string](
                     $PSItem.username_value + 
-                    '|' + 
-                    $PSItem.origin_url
+                    $SecretNameDelimiter + 
+                    $PSItem.origin_url + 
+                    $SecretNameDelimiter +
+                    $PSItem.id
                 ), #Name
                 [SecretType]::PSCredential,
                 $VaultName

@@ -9,7 +9,6 @@ function PrepareTestEnvironment {
     
     $SCRIPT:mockDB = (Copy-Item "$PSScriptRoot/Mocks/Login Data" "$TestDrive/Login Data" -PassThru -Force)
     $SCRIPT:mockState = (Copy-Item "$PSScriptRoot/Mocks/Local State" "$TestDrive/Local State" -PassThru -Force)
-
     $SCRIPT:defaultVaultParams = @{
         VaultName = $testVaultName
         AdditionalParameters = @{

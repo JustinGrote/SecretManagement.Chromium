@@ -1,7 +1,8 @@
 if ($PSVersionTable.PSVersion -ge '6.0.0' -and -not $isWindows) {
     throw [NotSupportedException]'Sorry, the Chromium secret vault only works on windows due to the use of DPAPI to decrypt passwords'
 }
-
+#TODO: Make this configurable
+$SCRIPT:SecretNameDelimiter = "`u{2502}"
 $SCRIPT:__VAULT = @{}
 foreach ($folderItem in 'Private','Classes','Helpers') {
     Get-ChildItem "$PSScriptRoot/$folderItem/*.ps1" | Foreach-Object {

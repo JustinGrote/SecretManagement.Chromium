@@ -1,5 +1,6 @@
 #requires -modules @{ModuleName="Pester"; ModuleVersion="5.1.0"}
 Describe 'Get-SecretInfo' {
+    
     BeforeEach {
         . $PSScriptRoot/Shared.ps1
         PrepareTestEnvironment
@@ -18,26 +19,27 @@ Describe 'Get-SecretInfo' {
         $secretName = 'pester|https://twitter.com/'
         $secretInfo = SecretManagement.Chromium.Extension\Get-SecretInfo @defaultVaultParams -Filter $secretName
         $secretInfo | Should -HaveCount 1
-        $secretInfo.Name | Should -Be $secretName
+        $secretInfo.Name | Should -Be "pester${D}https://twitter.com/${D}2"
         $secretInfo.VaultName | Should -be '__PESTER'
         $secretInfo.Type | Should -Be 'PSCredential'
     }
-
+    
+    $SCRIPT:D = "`u{2502}"
     $secretSearchTestCases = @(
         @{
             #Fully Qualified
-            searchTerm = 'pester|https://twitter.com/'
+            searchTerm = "pester|https://twitter.com/"
             expectedResultCount = 1
-            expectedNames = 'pester|https://twitter.com/'
+            expectedNames = "pester${D}https://twitter.com/${D}2"
         }
         @{
             #Explicit Domain
             searchTerm = 'https://twitter.com/'
             expectedResultCount = 3
             expectedNames = @(
-                'pester|https://twitter.com/'
-                'pester2|https://twitter.com/'
-                'pester3|https://twitter.com/'
+                "pester${D}https://twitter.com/${D}2"
+                "pester2${D}https://twitter.com/${D}3"
+                "pester3${D}https://twitter.com/${D}4"
             )
         }
         @{
@@ -45,9 +47,9 @@ Describe 'Get-SecretInfo' {
             searchTerm = '*twit*'
             expectedResultCount = 3
             expectedNames = @(
-                'pester|https://twitter.com/'
-                'pester2|https://twitter.com/'
-                'pester3|https://twitter.com/'
+                "pester${D}https://twitter.com/${D}2"
+                "pester2${D}https://twitter.com/${D}3"
+                "pester3${D}https://twitter.com/${D}4"
             )
         }
         @{
@@ -60,8 +62,8 @@ Describe 'Get-SecretInfo' {
             searchTerm = 'pester2|'
             expectedResultCount = 2
             expectedNames = @(
-                'pester2|https://twitter.com/'
-                'pester2|https://www.facebook.com/'
+                "pester2${D}https://twitter.com/${D}3"
+                "pester2${D}https://www.facebook.com/${D}7"
             )
         }
         @{
@@ -69,12 +71,12 @@ Describe 'Get-SecretInfo' {
             searchTerm = 'pester*|'
             expectedResultCount = 6
             expectedNames = @(
-                'pester|https://twitter.com/'
-                'pester2|https://twitter.com/'
-                'pester3|https://twitter.com/'
-                'pester1|https://www.facebook.com/'
-                'pester2|https://www.facebook.com/'
-                'pester3|https://www.facebook.com/'
+                "pester${D}https://twitter.com/${D}2"
+                "pester2${D}https://twitter.com/${D}3"
+                "pester3${D}https://twitter.com/${D}4"
+                "pester1${D}https://www.facebook.com/${D}6"
+                "pester2${D}https://www.facebook.com/${D}7"
+                "pester3${D}https://www.facebook.com/${D}8"
             )
         }
         @{
@@ -82,12 +84,12 @@ Describe 'Get-SecretInfo' {
             searchTerm = '*pes*|'
             expectedResultCount = 6
             expectedNames = @(
-                'pester|https://twitter.com/'
-                'pester2|https://twitter.com/'
-                'pester3|https://twitter.com/'
-                'pester1|https://www.facebook.com/'
-                'pester2|https://www.facebook.com/'
-                'pester3|https://www.facebook.com/'
+                "pester${D}https://twitter.com/${D}2"
+                "pester2${D}https://twitter.com/${D}3"
+                "pester3${D}https://twitter.com/${D}4"
+                "pester1${D}https://www.facebook.com/${D}6"
+                "pester2${D}https://www.facebook.com/${D}7"
+                "pester3${D}https://www.facebook.com/${D}8"
             )
         }
         @{
@@ -95,12 +97,12 @@ Describe 'Get-SecretInfo' {
             searchTerm = '*p*s*|'
             expectedResultCount = 6
             expectedNames = @(
-                'pester|https://twitter.com/'
-                'pester2|https://twitter.com/'
-                'pester3|https://twitter.com/'
-                'pester1|https://www.facebook.com/'
-                'pester2|https://www.facebook.com/'
-                'pester3|https://www.facebook.com/'
+                "pester${D}https://twitter.com/${D}2"
+                "pester2${D}https://twitter.com/${D}3"
+                "pester3${D}https://twitter.com/${D}4"
+                "pester1${D}https://www.facebook.com/${D}6"
+                "pester2${D}https://www.facebook.com/${D}7"
+                "pester3${D}https://www.facebook.com/${D}8"
             )
         }
         @{
@@ -113,9 +115,9 @@ Describe 'Get-SecretInfo' {
             searchTerm = 'pester*|*twitter*'
             expectedResultCount = 3
             expectedNames = @(
-                'pester|https://twitter.com/'
-                'pester2|https://twitter.com/'
-                'pester3|https://twitter.com/'
+                "pester${D}https://twitter.com/${D}2"
+                "pester2${D}https://twitter.com/${D}3"
+                "pester3${D}https://twitter.com/${D}4"
             )
         }
         @{
@@ -123,9 +125,9 @@ Describe 'Get-SecretInfo' {
             searchTerm = 'pester*|*twitter*'
             expectedResultCount = 3
             expectedNames = @(
-                'pester|https://twitter.com/'
-                'pester2|https://twitter.com/'
-                'pester3|https://twitter.com/'
+                "pester${D}https://twitter.com/${D}2"
+                "pester2${D}https://twitter.com/${D}3"
+                "pester3${D}https://twitter.com/${D}4"
             )
         }
     )
