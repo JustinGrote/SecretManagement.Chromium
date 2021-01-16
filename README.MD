@@ -1,5 +1,5 @@
 ![Banner](images/banner.png)
-![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/SecretManagement.Chromium?label=Powershell%20Gallery&logo=powershell)
+[![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/SecretManagement.Chromium?label=Powershell%20Gallery&logo=powershell)](https://www.powershellgallery.com/packages/SecretManagement.Chromium)
 ## Overview
 This is a Vault Extension for the [Microsoft.Powershell.SecretManagement](https://github.com/powershell/secretmanagement) module. It allows you to quickly detect and access passwords saved in Chromium based browsers such as Google Chrome and Microsoft Edge. You can use credentials saved in the browser to access other resources via Powershell.
 
