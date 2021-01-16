@@ -18,7 +18,7 @@ Get-SecretInfo | Out-Gridview -
 ```
 ## Features
 1. Automatic Discovery of Chrome and Edge (all versions)
-![demodiscovery](images\demo-discovery.gif)
+![demodiscovery](images/demo-discovery.gif)
 
 1. Fetching secrets, including secrets synced from Android
 1. Powerful filter and search syntax
