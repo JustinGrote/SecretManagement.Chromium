@@ -12,9 +12,12 @@ This is a Vault Extension for the [Microsoft.Powershell.SecretManagement](https:
 ## Quickstart
 ```powershell
 Install-Module SecretManagement.Chromium
-Register-ChromiumVault
+#Autodetect Chrome and Edge
+Register-ChromiumVault -Verbose
+#View the Vaults
+Get-SecretVault
+#Get a list of all secrets in the vaults
 Get-SecretInfo
-Get-SecretInfo | Out-Gridview -
 ```
 ## Features
 1. Automatic Discovery of Chrome and Edge (all versions)
