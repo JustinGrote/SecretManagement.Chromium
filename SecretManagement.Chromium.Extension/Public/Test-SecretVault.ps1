@@ -31,12 +31,13 @@ function Test-SecretVault {
     
     $dbFile = Get-Item $AdditionalParameters.DataPath -ErrorAction Stop
     $tempDBFile = Join-Path ([io.path]::GetTempPath()) "ChromeVault-$PID-$VaultName.dbcache"
-    if ((Test-Path $tempDBFile) -and (Get-FileHash $dbFile).Hash -eq (Get-FileHash $tempDBFile).Hash) {
+    if ((Test-Path $tempDBFile) -and $dbFile.LastWriteTime -eq (Get-Item $tempDBFile).LastWriteTime -and $dbFile.Length -eq (Get-Item $tempDBFile).Length) {
         Write-Debug "${VaultName}: Temp DB $tempDBFile is still a valid cache"
     } else {
         #Make a copy because Chromium locks the DB file at the SQLite level and this will freeze the module trying to open it
         Write-Debug "${VaultName}: Source DB has been updated, copying to $tempDBFile"
-        Copy-Item -ErrorAction Stop -Path $dbFile -Destination $tempDBFile
+        $tempDB = Copy-Item -ErrorAction Stop -Path $dbFile -Destination $tempDBFile -PassThru
+        $tempDB.LastWriteTime = $dbFile.LastWriteTime
     }
     
 
