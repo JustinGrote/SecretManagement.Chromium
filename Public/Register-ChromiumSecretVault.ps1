@@ -22,7 +22,11 @@ function Register-ChromiumSecretVault {
     $findChromiumParams = @{}
     if ($Preset) {$findChromiumParams.Preset = $Preset}
     foreach ($profileItem in Find-Chromium @findChromiumParams) {
-        $VaultName = $ProfileItem.Name + '-' + $ProfileItem.Profile
+        $VaultName = $ProfileItem.Name
+        if ($ProfileItem.Profile -ne 'Default') {
+            $VaultName += '-' + $ProfileItem.Profile
+        }
+        
         if ($PSCmdlet.ShouldProcess($VaultName, 'Register Chromium Secret Vault')) {
             $registerVaultParams = @{
                 Name = $VaultName
