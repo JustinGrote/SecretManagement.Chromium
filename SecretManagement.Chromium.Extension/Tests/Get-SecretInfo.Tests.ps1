@@ -24,7 +24,7 @@ Describe 'Get-SecretInfo' {
         $secretInfo.Type | Should -Be 'PSCredential'
     }
     
-    $SCRIPT:D = "`u{2502}"
+    $SCRIPT:D = "|"
     $secretSearchTestCases = @(
         @{
             #Fully Qualified

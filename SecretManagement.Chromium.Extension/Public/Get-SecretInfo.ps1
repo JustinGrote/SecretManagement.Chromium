@@ -17,9 +17,9 @@ function Get-SecretInfo {
     $db = $__VAULT[$vaultName]
 
     #First check for our special delimiter, so we know if this is an "easy" search
-    [String[]]$FilterParts = $filter.Split($VaultDelimiter)
-    if ($filterParts.count -gt 1) {
-        $filterQueryParts = "id = $($filter.Split($VaultDelimiter)[2])"
+    $fullyQualifiedSecretNameRegex = "^.+?\${VaultDelimiter}.+?\${VaultDelimiter}(\d+)$"
+    if ($filter -match $fullyQualifiedSecretNameRegex) {
+        $filterQueryParts = "id = $($matches[0])"
     } elseif ($Filter -and $Filter -ne '*') {
         [String[]]$filterParts = $Filter.split("|")
         [String[]]$filterQueryParts = @()
