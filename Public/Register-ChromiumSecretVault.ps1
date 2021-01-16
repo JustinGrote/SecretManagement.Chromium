@@ -29,7 +29,7 @@ function Register-ChromiumSecretVault {
         
         if ($PSCmdlet.ShouldProcess($VaultName, 'Register Chromium Secret Vault')) {
             $registerVaultParams = @{
-                Name = $VaultName
+                Name = $($VaultName -replace '\s','')
                 ModuleName = $moduleName
                 AllowClobber = $AllowClobber
                 VaultParameters = @{
