@@ -9,12 +9,12 @@ function Find-Chromium {
     )
     #TODO: Automatic Detection
     $Presets = [ordered]@{
-        Edge = 'Microsoft/Edge'
-        EdgeBeta = 'Microsoft/Edge Beta'
         EdgeCanary = 'Microsoft/Edge SxS'
-        Chrome = 'Google/Chrome'
-        ChromeBeta = 'Google/Chrome Beta'
+        EdgeBeta = 'Microsoft/Edge Beta'
+        Edge = 'Microsoft/Edge'
         ChromeCanary = 'Google/Chrome SxS'
+        ChromeBeta = 'Google/Chrome Beta'
+        Chrome = 'Google/Chrome'
     }
 
     $ErrorActionPreference = 'Stop'
