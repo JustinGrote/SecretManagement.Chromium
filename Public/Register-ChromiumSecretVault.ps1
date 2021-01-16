@@ -30,7 +30,8 @@ function Register-ChromiumSecretVault {
         if ($PSCmdlet.ShouldProcess($VaultName, 'Register Chromium Secret Vault')) {
             $registerVaultParams = @{
                 #BUG: https://github.com/PowerShell/SecretManagement/issues/96
-                Name = $($VaultName -replace '\s','')
+                #TODO: Fetch the actual profile name, not just profile folder name
+                Name = $($VaultName -replace ' ','')
                 ModuleName = $moduleName
                 AllowClobber = $AllowClobber
                 VaultParameters = @{
