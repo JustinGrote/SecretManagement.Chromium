@@ -27,6 +27,12 @@ Describe 'Get-SecretInfo' {
     $SCRIPT:D = "|"
     $secretSearchTestCases = @(
         @{
+            #Fully Qualified with ID
+            searchTerm = "pester|https://twitter.com/|2"
+            expectedResultCount = 1
+            expectedNames = "pester${D}https://twitter.com/${D}2"
+        },
+        @{
             #Fully Qualified
             searchTerm = "pester|https://twitter.com/"
             expectedResultCount = 1
