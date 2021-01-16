@@ -15,8 +15,8 @@ function Register-ChromiumSecretVault {
         )][String]$Preset,
         #Specify to overwrite vaults already present
         [Switch]$AllowClobber,
-        #Specify the path to Chromium.SecretManagement if it is not in your default module path. This is typically only used for debugging.
-        [String]$ModuleName = $(Split-Path (Get-Module SecretManagement.Chromium).Path)
+        #Specify the path to SecretManagement.Chromium if it is not in your default module path. This is typically only used for debugging.
+        [String]$ModuleName = 'SecretManagement.Chromium'
     )
 
     $findChromiumParams = @{}
