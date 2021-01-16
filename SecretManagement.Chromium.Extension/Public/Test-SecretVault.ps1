@@ -1,4 +1,5 @@
 using namespace 'System.Security.Cryptography'
+
 function Test-SecretVault {
     [CmdletBinding()]
     param (
@@ -15,13 +16,8 @@ function Test-SecretVault {
     if (-not $VaultName) { throw 'You must specify a Vault Name to test' }
 
     if (-not $AdditionalParameters.DataPath) {
-        $VaultDetectParameters = @{}
-        if ($VaultParameters.Preset) {$VaultDetectParameters.Preset = $VaultParameters.Preset}
-        if ($VaultParameters.ProfileName) {$VaultDetectParameters.ProfileName = $VaultParameters.ProfileName}
-        $AdditionalParameters.DataPath = Find-Chromium @VaultDetectParameters
-        if (-not $AdditionalParameters.DataPath) {
-            throw "Vault ${VaultName}: No vaults autodetected. You must specify the Path vault parameter as a path to your Chromium Database. Hint for Chrome: `$env:LOCALAPPDATA\Google\Chrome\User Data\Default\Login Data"
-        }
+        #TODO: Interactive vault selection with Out-ConsoleGridView
+        throw "Vault ${VaultName}: No vaults autodetected. You must specify the Path vault parameter as a path to your Chromium Database. Hint for Chrome: `$env:LOCALAPPDATA\Google\Chrome\User Data\Default\Login Data"
     }
     if (-not $AdditionalParameters.StatePath) {
         try {
@@ -32,14 +28,28 @@ function Test-SecretVault {
             throw "Vault ${VaultName}: You must specify the StatePath parameter as a path to your Chromium Database. Hint for Chrome: `$env:LOCALAPPDATA\Google\Chrome\User Data\Local State"
         }
     }
-
+    
     $dbFile = Get-Item $AdditionalParameters.DataPath -ErrorAction Stop
-    $db = ReallySimpleDatabase\Get-Database -Path $dbFile -WarningAction SilentlyContinue
+    $tempDBFile = Join-Path ([io.path]::GetTempPath()) "ChromeVault-$PID-$VaultName.dbcache"
+    if ((Test-Path $tempDBFile) -and (Get-FileHash $dbFile).Hash -eq (Get-FileHash $tempDBFile).Hash) {
+        Write-Debug "${VaultName}: Temp DB $tempDBFile is still a valid cache"
+    } else {
+        #Make a copy because Chromium locks the DB file at the SQLite level and this will freeze the module trying to open it
+        Write-Debug "${VaultName}: Source DB has been updated, copying to $tempDBFile"
+        Copy-Item -ErrorAction Stop -Path $dbFile -Destination $tempDBFile
+    }
+    
+
+    $db = ReallySimpleDatabase\Get-Database -Path $tempDBFile -WarningAction SilentlyContinue
     try {
         $db.open()
         #Loose check if it is a chromium database
         #TODO: Check table schema
-        if (-not $db.getTable('logins')) {throw "$dbFile is not a valid Chromium password database (Logins table not found)"}
+        if (-not $db.getTable('logins')) {
+            throw "$tempDBFile is not a valid Chromium password database (Logins table not found)"
+            $db.close()
+            Remove-Item $tempDBFile
+        }
         $SCRIPT:__VAULT[$VaultName] = $db
     } catch {
         throw

@@ -8,8 +8,9 @@ Describe 'Test-SecretVault' {
         TeardownTestEnvironment
     }
 
-    It 'Succeeds by default' {
-        SecretManagement.Chromium.Extension\Test-SecretVault @DefaultVaultParams
+    It 'Successfully Tests Mock Database' {
+        SecretManagement.Chromium.Extension\Test-SecretVault @DefaultVaultParams | 
+            Should -Be $true
     }
 
     It 'Fails for wrong path' -Tag 'File' {
@@ -19,10 +20,11 @@ Describe 'Test-SecretVault' {
             Should -Throw '*because it does not exist.'
     }
 
-    It 'Fails for invalid database' -Tag 'Chromium' {
+    It 'Fails for invalid database file' -Tag 'Chromium' {
         $vaultParams = New-DeepCopyObject $defaultVaultParams
         #Create a random empty file
-        $vaultParams.AdditionalParameters.DataPath = [io.path]::GetTempFileName()
+        $vaultParams.AdditionalParameters.DataPath = New-Item -ItemType File -Path "$TestDrive/InvalidDatabaseFile"
+        
         {SecretManagement.Chromium.Extension\Test-SecretVault @VaultParams} |
             Should -Throw '*is not a valid Chromium password database (Logins table not found)'
     }
@@ -30,12 +32,5 @@ Describe 'Test-SecretVault' {
     It 'Closes the vault safely' -Tag 'File','Chromium' {
         SecretManagement.Chromium.Extension\Test-SecretVault @DefaultVaultParams
         Remove-Item $DefaultVaultParams.AdditionalParameters.DataPath -ErrorAction Stop
-    }
-
-    It 'Opens db even if DB already open' -Tag 'File','Chromium' {
-        $SCRIPT:db = ReallySimpleDatabase\Get-Database $defaultVaultParams.AdditionalParameters.DataPath -WarningAction SilentlyContinue
-        $db.open()
-        SecretManagement.Chromium.Extension\Test-SecretVault @DefaultVaultParams -ErrorAction Stop
-        $db.close()
     }
 }
