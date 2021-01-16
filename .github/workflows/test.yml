@@ -6,6 +6,7 @@ on:
       - main
 jobs:
   test:
+    disabled: true
     name: Pester Tests
     runs-on: ${{ matrix.os }}
     strategy:
