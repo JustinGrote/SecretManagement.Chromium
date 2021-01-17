@@ -17,7 +17,7 @@ function Get-SecretInfo {
     $db = $__VAULT[$vaultName]
 
     #First check for our special delimiter, so we know if this is an "easy" search
-    $fullyQualifiedSecretNameRegex = "^.+?\${VaultDelimiter}.+?\${VaultDelimiter}(\d+)$"
+    $fullyQualifiedSecretNameRegex = "^.*?\${VaultDelimiter}.*?\${VaultDelimiter}(\d+)$"
     if ($filter -match $fullyQualifiedSecretNameRegex) {
         $filterQueryParts = "id = $($matches[1])"
     } elseif ($Filter -and $Filter -ne '*') {
@@ -35,7 +35,7 @@ function Get-SecretInfo {
         }
     }
 
-    #Build the fitler part of the query string
+    #Build the filter part of the query string
     [String]$filterQuery = $null
     if ($filterQueryParts.count -ge 1) {
         [String]$filterQuery = ' WHERE ' + ($filterQueryParts -join ' AND ')
@@ -59,6 +59,7 @@ function Get-SecretInfo {
         return $secretInfoResult
     } else {
         return $secretInfoResult | Foreach-Object {
+            #TODO: Report as securestring if username not present. Requires better parsing
             [SecretInformation]::new(
                 [string](
                     $PSItem.username_value + 
