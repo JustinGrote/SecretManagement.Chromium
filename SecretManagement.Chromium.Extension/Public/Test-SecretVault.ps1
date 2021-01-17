@@ -7,7 +7,7 @@ function Test-SecretVault {
         [string]$VaultName,
 
         [Parameter(ValueFromPipelineByPropertyName)]
-        [hashtable]$AdditionalParameters = (Get-Secretvault $VaultName).VaultParameters #This intelligent default is here because if you call test-secretvault from other commands it doesn't populate like it does when called from SecretManagement
+        [hashtable]$AdditionalParameters = (Get-SecretVault $VaultName).VaultParameters #This intelligent default is here because if you call test-secretvault from other commands it doesn't populate like it does when called from SecretManagement
     )
 
     Write-Verbose "SecretManagement: Testing Vault ${VaultName}"
@@ -21,14 +21,14 @@ function Test-SecretVault {
     }
     if (-not $AdditionalParameters.StatePath) {
         try {
-            $candidateStatePath = Join-Path $AdditionalParameters.DataPath "../../Local State" -Resolve -ErrorAction stop
+            $candidateStatePath = Join-Path $AdditionalParameters.DataPath '../../Local State' -Resolve -ErrorAction stop
             Write-Verbose "Autodetected Local State file at $candidateStatePath"
             $AdditionalParameters.StatePath = $candidateStatePath
         } catch {
             throw "Vault ${VaultName}: You must specify the StatePath parameter as a path to your Chromium Database. Hint for Chrome: `$env:LOCALAPPDATA\Google\Chrome\User Data\Local State"
         }
     }
-    
+
     $dbFile = Get-Item $AdditionalParameters.DataPath -ErrorAction Stop
     $tempDBFile = Join-Path ([io.path]::GetTempPath()) "ChromeVault-$PID-$VaultName.dbcache"
     if ((Test-Path $tempDBFile) -and $dbFile.LastWriteTime -eq (Get-Item $tempDBFile).LastWriteTime -and $dbFile.Length -eq (Get-Item $tempDBFile).Length) {
@@ -39,7 +39,7 @@ function Test-SecretVault {
         $tempDB = Copy-Item -ErrorAction Stop -Path $dbFile -Destination $tempDBFile -PassThru
         $tempDB.LastWriteTime = $dbFile.LastWriteTime
     }
-    
+
 
     $db = ReallySimpleDatabase\Get-Database -Path $tempDBFile -WarningAction SilentlyContinue
     try {
@@ -57,12 +57,12 @@ function Test-SecretVault {
     } finally {
         $db.close()
     }
-    
+
     #Extract the local state encryption key if present
     if ($AdditionalParameters.StatePath) {
-        $localStateInfo = Get-Content -Raw $AdditionalParameters.StatePath | ConvertFrom-Json 
-        if ($localStateInfo) { 
-            $encryptedkey = [convert]::FromBase64String($localStateInfo.os_crypt.encrypted_key) 
+        $localStateInfo = Get-Content -Raw $AdditionalParameters.StatePath | ConvertFrom-Json
+        if ($localStateInfo) {
+            $encryptedkey = [convert]::FromBase64String($localStateInfo.os_crypt.encrypted_key)
         }
         if ($encryptedkey -and [string]::new($encryptedkey[0..4]) -eq 'DPAPI') {
             # Not present in Windows PowerShell 5, nor in PS Core V6

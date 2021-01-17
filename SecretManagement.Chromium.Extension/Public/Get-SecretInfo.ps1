@@ -21,7 +21,7 @@ function Get-SecretInfo {
     if ($filter -match $fullyQualifiedSecretNameRegex) {
         $filterQueryParts = "id = $($matches[1])"
     } elseif ($Filter -and $Filter -ne '*') {
-        [String[]]$filterParts = $Filter.split("|")
+        [String[]]$filterParts = $Filter.split('|')
         [String[]]$filterQueryParts = @()
         #Default is to search by URL
         #TODO: Escape _ and %
@@ -41,9 +41,9 @@ function Get-SecretInfo {
         [String]$filterQuery = ' WHERE ' + ($filterQueryParts -join ' AND ')
     }
 
-    [String]$secretInfoQuery = "SELECT * FROM logins" + $filterQuery
+    [String]$secretInfoQuery = 'SELECT * FROM logins' + $filterQuery
     try {
-        $secretInfoResult = $db.InvokeSQL($secretInfoQuery) 
+        $secretInfoResult = $db.InvokeSQL($secretInfoQuery)
     } catch {
         throw
     } finally {
@@ -58,13 +58,13 @@ function Get-SecretInfo {
     if ($AsCredentialEntry) {
         return $secretInfoResult
     } else {
-        return $secretInfoResult | Foreach-Object {
+        return $secretInfoResult | ForEach-Object {
             #TODO: Report as securestring if username not present. Requires better parsing
             [SecretInformation]::new(
                 [string](
-                    $PSItem.username_value + 
-                    $SecretNameDelimiter + 
-                    $PSItem.origin_url + 
+                    $PSItem.username_value +
+                    $SecretNameDelimiter +
+                    $PSItem.origin_url +
                     $SecretNameDelimiter +
                     $PSItem.id
                 ), #Name

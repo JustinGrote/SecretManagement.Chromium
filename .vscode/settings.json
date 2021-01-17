@@ -6,5 +6,9 @@
     ],
     "pesterExplorer.autoDiscoverOnOpen": true,
     "pesterExplorer.testRootDirectory": "SecretManagement.Chromium.Extension/Tests",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "editor.trimAutoWhitespace": true,
+    "files.trimTrailingWhitespace": true,
+    "powershell.codeFormatting.whitespaceAroundPipe": false,
+    "powershell.codeFormatting.whitespaceBetweenParameters": true
 }

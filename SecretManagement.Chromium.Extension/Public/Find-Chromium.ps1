@@ -9,16 +9,16 @@ function Find-Chromium {
     )
     #TODO: Automatic Detection
     $Presets = [ordered]@{
-        EdgeCanary = 'Microsoft/Edge SxS'
-        EdgeBeta = 'Microsoft/Edge Beta'
-        Edge = 'Microsoft/Edge'
+        EdgeCanary   = 'Microsoft/Edge SxS'
+        EdgeBeta     = 'Microsoft/Edge Beta'
+        Edge         = 'Microsoft/Edge'
         ChromeCanary = 'Google/Chrome SxS'
-        ChromeBeta = 'Google/Chrome Beta'
-        Chrome = 'Google/Chrome'
+        ChromeBeta   = 'Google/Chrome Beta'
+        Chrome       = 'Google/Chrome'
     }
 
     $ErrorActionPreference = 'Stop'
-    
+
     function getUserDataFolderPath ($Preset) {
         $localAppDataPath = [Environment]::GetFolderPath('LocalApplicationData')
         return (
@@ -38,8 +38,8 @@ function Find-Chromium {
         } catch {
             Write-Warning "$UserDataFolderPath exists but has no Local State file."
         }
-        [String[]]$ProfileNames = (Get-Content -raw $localStatePath | ConvertFrom-Json).profile.info_cache.psobject.properties.name
-        if (-not $ProfileNames) {Write-Warning "Local State file exists but no profile information was found"}
+        [String[]]$ProfileNames = (Get-Content -Raw $localStatePath | ConvertFrom-Json).profile.info_cache.psobject.properties.name
+        if (-not $ProfileNames) { Write-Warning 'Local State file exists but no profile information was found' }
         return $ProfileNames
     }
 
@@ -50,7 +50,7 @@ function Find-Chromium {
                     (getUserDataFolderPath $Preset),
                     $ProfileName,
                     'Login Data'
-                )   
+                )
             )
         )
     }
@@ -68,10 +68,10 @@ function Find-Chromium {
             foreach ($ProfileNameItem in (getProfileNames $UserDataFolderPath)) {
                 $LoginDataPath = getLoginDataPath $Presets[$PresetItem] $ProfileNameItem
                 [PSCustomObject][ordered]@{
-                    Name = $PresetItem
-                    Profile = $ProfileNameItem
+                    Name           = $PresetItem
+                    Profile        = $ProfileNameItem
                     LocalStatePath = Join-Path $userDataFolderPath 'Local State'
-                    LoginDataPath = $LoginDataPath
+                    LoginDataPath  = $LoginDataPath
                 } | Write-Output
                 Write-Verbose "SecretManagement.Chromium: Discovery FOUND $PresetItem profile at $($Presets[$PresetItem])"
             }

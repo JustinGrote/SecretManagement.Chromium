@@ -12,7 +12,7 @@ Describe 'Register-ChromiumSecretVault' {
     }
     It 'Registers Chrome Preset Vault w/ AllowClobber' {
         Get-SecretVault 'Chrome' -ErrorAction SilentlyContinue | Unregister-SecretVault -ErrorAction SilentlyContinue
-        if (Get-SecretVault 'Chrome' -ErrorAction SilentlyContinue) {throw 'Cannot proceed because a vault with same name could not be cleaned up'}
+        if (Get-SecretVault 'Chrome' -ErrorAction SilentlyContinue) { throw 'Cannot proceed because a vault with same name could not be cleaned up' }
         Register-ChromiumSecretVault -Preset Chrome
         Register-ChromiumSecretVault -Preset Chrome -AllowClobber
         $chromeVault = Get-SecretVault 'Chrome'

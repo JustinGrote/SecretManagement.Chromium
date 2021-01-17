@@ -9,14 +9,14 @@ Describe 'Test-SecretVault' {
     }
 
     It 'Successfully Tests Mock Database' {
-        SecretManagement.Chromium.Extension\Test-SecretVault @DefaultVaultParams | 
+        SecretManagement.Chromium.Extension\Test-SecretVault @DefaultVaultParams |
             Should -Be $true
     }
 
     It 'Fails for wrong path' -Tag 'File' {
         $vaultParams = New-DeepCopyObject $defaultVaultParams
         $vaultParams.AdditionalParameters.DataPath = 'C:\fake'
-        {SecretManagement.Chromium.Extension\Test-SecretVault @VaultParams} |
+        { SecretManagement.Chromium.Extension\Test-SecretVault @VaultParams } |
             Should -Throw '*because it does not exist.'
     }
 
@@ -24,8 +24,8 @@ Describe 'Test-SecretVault' {
         $vaultParams = New-DeepCopyObject $defaultVaultParams
         #Create a random empty file
         $vaultParams.AdditionalParameters.DataPath = New-Item -ItemType File -Path "$TestDrive/InvalidDatabaseFile"
-        
-        {SecretManagement.Chromium.Extension\Test-SecretVault @VaultParams} |
+
+        { SecretManagement.Chromium.Extension\Test-SecretVault @VaultParams } |
             Should -Throw '*is not a valid Chromium password database (Logins table not found)'
     }
 

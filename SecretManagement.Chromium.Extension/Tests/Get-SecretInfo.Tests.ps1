@@ -1,6 +1,6 @@
 #requires -modules @{ModuleName="Pester"; ModuleVersion="5.1.0"}
 Describe 'Get-SecretInfo' {
-    
+
     BeforeEach {
         . $PSScriptRoot/Shared.ps1
         PrepareTestEnvironment
@@ -8,7 +8,7 @@ Describe 'Get-SecretInfo' {
     }
     AfterEach {
         TeardownTestEnvironment
-        $testVault | Microsoft.Powershell.SecretManagement\Unregister-SecretVault -ErrorAction SilentlyContinue
+        $testVault | Microsoft.PowerShell.SecretManagement\Unregister-SecretVault -ErrorAction SilentlyContinue
     }
     It 'All secrets' {
         $secretInfo = SecretManagement.Chromium.Extension\Get-SecretInfo @defaultVaultParams
@@ -20,29 +20,29 @@ Describe 'Get-SecretInfo' {
         $secretInfo = SecretManagement.Chromium.Extension\Get-SecretInfo @defaultVaultParams -Filter $secretName
         $secretInfo | Should -HaveCount 1
         $secretInfo.Name | Should -Be "pester${D}https://twitter.com/${D}2"
-        $secretInfo.VaultName | Should -be '__PESTER'
+        $secretInfo.VaultName | Should -Be '__PESTER'
         $secretInfo.Type | Should -Be 'PSCredential'
     }
-    
-    $SCRIPT:D = "|"
+
+    $SCRIPT:D = '|'
     $secretSearchTestCases = @(
         @{
             #Fully Qualified with ID
-            searchTerm = "pester|https://twitter.com/|2"
+            searchTerm          = 'pester|https://twitter.com/|2'
             expectedResultCount = 1
-            expectedNames = "pester${D}https://twitter.com/${D}2"
+            expectedNames       = "pester${D}https://twitter.com/${D}2"
         },
         @{
             #Fully Qualified
-            searchTerm = "pester|https://twitter.com/"
+            searchTerm          = 'pester|https://twitter.com/'
             expectedResultCount = 1
-            expectedNames = "pester${D}https://twitter.com/${D}2"
+            expectedNames       = "pester${D}https://twitter.com/${D}2"
         }
         @{
             #Explicit Domain
-            searchTerm = 'https://twitter.com/'
+            searchTerm          = 'https://twitter.com/'
             expectedResultCount = 3
-            expectedNames = @(
+            expectedNames       = @(
                 "pester${D}https://twitter.com/${D}2"
                 "pester2${D}https://twitter.com/${D}3"
                 "pester3${D}https://twitter.com/${D}4"
@@ -50,9 +50,9 @@ Describe 'Get-SecretInfo' {
         }
         @{
             #Wildcard Domain
-            searchTerm = '*twit*'
+            searchTerm          = '*twit*'
             expectedResultCount = 3
-            expectedNames = @(
+            expectedNames       = @(
                 "pester${D}https://twitter.com/${D}2"
                 "pester2${D}https://twitter.com/${D}3"
                 "pester3${D}https://twitter.com/${D}4"
@@ -60,23 +60,23 @@ Describe 'Get-SecretInfo' {
         }
         @{
             #Wildcard Domain w/ mistake
-            searchTerm = '*twit*xxxmistyped*'
+            searchTerm          = '*twit*xxxmistyped*'
             expectedResultCount = 0
         }
         @{
             #Explicit Username
-            searchTerm = 'pester2|'
+            searchTerm          = 'pester2|'
             expectedResultCount = 2
-            expectedNames = @(
+            expectedNames       = @(
                 "pester2${D}https://twitter.com/${D}3"
                 "pester2${D}https://www.facebook.com/${D}7"
             )
         }
         @{
             #Wildcard Username
-            searchTerm = 'pester*|'
+            searchTerm          = 'pester*|'
             expectedResultCount = 6
-            expectedNames = @(
+            expectedNames       = @(
                 "pester${D}https://twitter.com/${D}2"
                 "pester2${D}https://twitter.com/${D}3"
                 "pester3${D}https://twitter.com/${D}4"
@@ -87,9 +87,9 @@ Describe 'Get-SecretInfo' {
         }
         @{
             #Double Wildcard Username
-            searchTerm = '*pes*|'
+            searchTerm          = '*pes*|'
             expectedResultCount = 6
-            expectedNames = @(
+            expectedNames       = @(
                 "pester${D}https://twitter.com/${D}2"
                 "pester2${D}https://twitter.com/${D}3"
                 "pester3${D}https://twitter.com/${D}4"
@@ -100,9 +100,9 @@ Describe 'Get-SecretInfo' {
         }
         @{
             #Intermediate wildcard
-            searchTerm = '*p*s*|'
+            searchTerm          = '*p*s*|'
             expectedResultCount = 6
-            expectedNames = @(
+            expectedNames       = @(
                 "pester${D}https://twitter.com/${D}2"
                 "pester2${D}https://twitter.com/${D}3"
                 "pester3${D}https://twitter.com/${D}4"
@@ -113,14 +113,14 @@ Describe 'Get-SecretInfo' {
         }
         @{
             #Intermediate wildcard with wrong term
-            searchTerm = '*p*xxxmistyped*|'
+            searchTerm          = '*p*xxxmistyped*|'
             expectedResultCount = 0
         }
         @{
             #Combined Intermediate wildcard
-            searchTerm = 'pester*|*twitter*'
+            searchTerm          = 'pester*|*twitter*'
             expectedResultCount = 3
-            expectedNames = @(
+            expectedNames       = @(
                 "pester${D}https://twitter.com/${D}2"
                 "pester2${D}https://twitter.com/${D}3"
                 "pester3${D}https://twitter.com/${D}4"
@@ -128,9 +128,9 @@ Describe 'Get-SecretInfo' {
         }
         @{
             #Http and Https
-            searchTerm = 'pester*|*twitter*'
+            searchTerm          = 'pester*|*twitter*'
             expectedResultCount = 3
-            expectedNames = @(
+            expectedNames       = @(
                 "pester${D}https://twitter.com/${D}2"
                 "pester2${D}https://twitter.com/${D}3"
                 "pester3${D}https://twitter.com/${D}4"
@@ -144,10 +144,10 @@ Describe 'Get-SecretInfo' {
             $PSItem | Should -BeIn $ExpectedNames
         }
         $secretInfo.VaultName.foreach{
-            $PSItem | Should -be '__PESTER'
-        } 
+            $PSItem | Should -Be '__PESTER'
+        }
         $secretInfo.Type.foreach{
             $PSItem | Should -Be 'PSCredential'
-        } 
+        }
     }
 }

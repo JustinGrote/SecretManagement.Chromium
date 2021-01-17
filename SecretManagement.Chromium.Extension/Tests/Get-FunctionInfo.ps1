@@ -69,7 +69,7 @@ function Get-FunctionInfo {
         }
 
         if ($scriptBlock) {
-            $scriptBlock.Ast.FindAll( { 
+            $scriptBlock.Ast.FindAll( {
                     param( $ast )
 
                     $ast -is [FunctionDefinitionAst]

@@ -16,7 +16,7 @@ function Unprotect-ChromiumString {
             $EncryptedString[3..14], 
             $EncryptedString[15..($EncryptedString.Length - 17)],
             $EncryptedString[-16..-1], 
-            $output, 
+            $output,
             $null
         )
         return [string]::new($output)

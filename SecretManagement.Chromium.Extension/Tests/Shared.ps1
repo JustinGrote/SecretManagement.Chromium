@@ -1,26 +1,26 @@
 function PrepareTestEnvironment {
     $SCRIPT:testVaultName = '__PESTER'
-    Microsoft.Powershell.SecretManagement\Unregister-SecretVault -Name $testVaultName -ErrorAction SilentlyContinue
+    Microsoft.PowerShell.SecretManagement\Unregister-SecretVault -Name $testVaultName -ErrorAction SilentlyContinue
     Remove-Module SecretManagement.Chromium,SecretManagement.Chromium.Extension -ErrorAction SilentlyContinue
     if (-not (Get-Module ReallySimpleDatabase -ListAvailable -ErrorAction SilentlyContinue)) {
         Install-Module ReallySimpleDatabase -Scope CurrentUser -Force -ErrorAction Stop
     }
     Import-Module (Resolve-Path $PSScriptRoot/..) -Force
-    
+
     $SCRIPT:mockDB = (Copy-Item "$PSScriptRoot/Mocks/Login Data" "$TestDrive/Login Data" -PassThru -Force)
     $SCRIPT:mockState = (Copy-Item "$PSScriptRoot/Mocks/Local State" "$TestDrive/Local State" -PassThru -Force)
     $SCRIPT:defaultVaultParams = @{
-        VaultName = $testVaultName
+        VaultName            = $testVaultName
         AdditionalParameters = @{
-            DataPath = $mockDB.fullname
+            DataPath  = $mockDB.fullname
             StatePath = $mockState.fullname
         }
     }
     $SCRIPT:registerVaultParams = @{
-        Name = $testVaultName
-        ModuleName = Resolve-Path "$PSScriptRoot/../.."
+        Name            = $testVaultName
+        ModuleName      = Resolve-Path "$PSScriptRoot/../.."
         VaultParameters = @{
-            DataPath = $mockDB.fullname
+            DataPath  = $mockDB.fullname
             StatePath = $mockState.fullname
         }
     }
@@ -40,9 +40,9 @@ function TeardownTestEnvironment {
 
 function New-DeepCopyObject {
     param($DeepCopyObject)
-    $memStream = new-object IO.MemoryStream
-    $formatter = new-object Runtime.Serialization.Formatters.Binary.BinaryFormatter
+    $memStream = New-Object IO.MemoryStream
+    $formatter = New-Object Runtime.Serialization.Formatters.Binary.BinaryFormatter
     $formatter.Serialize($memStream,$DeepCopyObject)
-    $memStream.Position=0
+    $memStream.Position = 0
     $formatter.Deserialize($memStream)
 }
