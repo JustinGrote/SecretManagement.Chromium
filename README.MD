@@ -1,26 +1,26 @@
 ![Banner](images/banner.png)
 [![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/SecretManagement.Chromium?label=Powershell%20Gallery&logo=powershell)](https://www.powershellgallery.com/packages/SecretManagement.Chromium)
 ## Overview
-This is a Vault Extension for the [Microsoft.Powershell.SecretManagement](https://github.com/powershell/secretmanagement) module. It allows you to quickly detect and access passwords saved in Chromium based browsers such as Google Chrome and Microsoft Edge. You can use credentials saved in the browser to access other resources via Powershell.
+This is a Vault Extension for the [Microsoft.PowerShell.SecretManagement](https://github.com/powershell/secretmanagement) module. It allows you to quickly detect and access passwords saved in Chromium-based browsers such as Google Chrome and Microsoft Edge. You can use credentials saved in the browser to access other resources via PowerShell.
 
 ![Demo](images/demo.gif)
 
 ## Requirements
-- **Powershell 7** (Windows Powershell 5.1 support on the roadmap)
+- **PowerShell 7** (Windows PowerShell 5.1 support on the roadmap)
 - **Microsoft Windows** (Linux/OSX support on the roadmap)
 
 ## Quickstart
 ```powershell
 Install-Module SecretManagement.Chromium
 #Autodetect Chrome and Edge
-Register-ChromiumVault -Verbose
-#View the Vaults
+Register-ChromiumSecretVault -Verbose
+#View the vaults
 Get-SecretVault
 #Get a list of all secrets in the vaults
 Get-SecretInfo
 ```
 ## Features
-1. Automatic Discovery of Chrome and Edge (all versions)
+1. Automatic discovery of Chrome and Edge (all versions)
 ![demodiscovery](images/demo-discovery.gif)
 
 1. Fetching secrets, including secrets synced from Android
@@ -36,8 +36,8 @@ You can search for secrets in the following ways:
 1. User + Domain Explicit Search (`myuser|https://www.twitter.com/`)
 1. Explicit URL (`https://www.twitter.com/`). All components, including trailing backspaces, are required!
 1. Wildcard URL Search (`*twitter*`)
-1. Explcit User search (`myuser|`)
-1. Wildcard User Search (`my*|`) - Note the trailing | to indicate you want to search user and not URL 
+1. Explicit User Search (`myuser|`)
+1. Wildcard User Search (`my*|`) - Note the trailing `|` to indicate you want to search user and not URL 
 1. User + Domain Wildcard Search (`*m*|*tw*`)
 
 ## FAQ
