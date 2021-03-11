@@ -9,6 +9,6 @@
     "editor.formatOnSave": true,
     "editor.trimAutoWhitespace": true,
     "files.trimTrailingWhitespace": true,
-    "powershell.codeFormatting.whitespaceAroundPipe": false,
-    "powershell.codeFormatting.whitespaceBetweenParameters": true
+    "powershell.codeFormatting.whitespaceBetweenParameters": true,
+    "powershell.codeFormatting.addWhitespaceAroundPipe": false
 }
