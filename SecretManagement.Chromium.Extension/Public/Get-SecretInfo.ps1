@@ -62,6 +62,7 @@ function Get-SecretInfo {
             #TODO: Repo$PSItem.username_valuert as securestring if username not present. Requires better parsing
 
             $metadata = @{
+                id          = $PSItem.id
                 username    = $PSItem.username_value
                 realm       = $PSItem.signon_realm
                 origin      = $PSItem.origin_url
