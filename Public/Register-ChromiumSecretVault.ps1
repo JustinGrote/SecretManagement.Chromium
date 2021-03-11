@@ -20,37 +20,37 @@ function Register-ChromiumSecretVault {
     )
 
     $findChromiumParams = @{}
-    if ($Preset) {$findChromiumParams.Preset = $Preset}
+    if ($Preset) { $findChromiumParams.Preset = $Preset }
     foreach ($profileItem in Find-Chromium @findChromiumParams) {
         $VaultName = $ProfileItem.Name
         if ($ProfileItem.Profile -ne 'Default') {
             $VaultName += '-' + $ProfileItem.Profile
         }
-        
+
         if ($PSCmdlet.ShouldProcess($VaultName, 'Register Chromium Secret Vault')) {
             $registerVaultParams = @{
                 #BUG: https://github.com/PowerShell/SecretManagement/issues/96
                 #TODO: Fetch the actual profile name, not just profile folder name
-                Name = $($VaultName -replace ' ','')
-                ModuleName = $moduleName
-                AllowClobber = $AllowClobber
+                Name            = $($VaultName -replace ' ','')
+                ModuleName      = $moduleName
+                AllowClobber    = $AllowClobber
                 VaultParameters = @{
-                    DataPath = [String]$ProfileItem.LoginDataPath
+                    DataPath  = [String]$ProfileItem.LoginDataPath
                     StatePath = [String]$ProfileItem.LocalStatePath
                 }
-                Description = $ProfileItem.Name,
-                    'Profile',
-                    $ProfileItem.Profile,
-                    'at',
-                    (Split-Path $ProfileItem.LoginDataPath) -join ' '
+                Description     = $ProfileItem.Name,
+                'Profile',
+                $ProfileItem.Profile,
+                'at',
+                (Split-Path $ProfileItem.LoginDataPath) -join ' '
             }
 
             try {
                 Register-SecretVault @registerVaultParams
             } catch {
                 if ($PSItem.FullyQualifiedErrorId -eq 'RegisterSecretVaultInvalidVaultName,Microsoft.PowerShell.SecretManagement.RegisterSecretVaultCommand') {
-                    write-warning "$VaultName is already registered. Skipping..."
-                } else {throw}
+                    Write-Warning "$VaultName is already registered. Skipping..."
+                } else { throw }
             }
         }
     }

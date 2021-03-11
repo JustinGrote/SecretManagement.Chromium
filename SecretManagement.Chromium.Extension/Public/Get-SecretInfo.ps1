@@ -59,7 +59,20 @@ function Get-SecretInfo {
         return $secretInfoResult
     } else {
         return $secretInfoResult | ForEach-Object {
-            #TODO: Report as securestring if username not present. Requires better parsing
+            #TODO: Repo$PSItem.username_valuert as securestring if username not present. Requires better parsing
+
+            $metadata = @{
+                username    = $PSItem.username_value
+                realm       = $PSItem.signon_realm
+                origin      = $PSItem.origin_url
+                actionurl   = $PSItem.action_url
+                created     = if ($PSItem.date_created) { ConvertFrom-WebkitTimeStamp $PSItem.date_created }
+                synced      = if ($PSItem.date_synced) { ConvertFrom-WebkitTimeStamp $PSItem.date_synced }
+                lastused    = if ($PSItem.date_last_used) { ConvertFrom-WebkitTimeStamp $PSItem.date_last_used }
+                timesused   = $PSItem.times_used
+                blacklisted = [boolean]$PSItem.blacklisted_by_user
+            } | ConvertTo-ReadOnlyDictionary
+
             [SecretInformation]::new(
                 [string](
                     $PSItem.username_value +
@@ -69,7 +82,8 @@ function Get-SecretInfo {
                     $PSItem.id
                 ), #Name
                 [SecretType]::PSCredential,
-                $VaultName
+                $VaultName,
+                $metadata
             )
         }
     }
